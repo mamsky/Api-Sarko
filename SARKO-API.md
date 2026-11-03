@@ -72,7 +72,7 @@ di-build tanpa monorepo induk.
 │   ├── eslint-config/          @sarko/eslint-config
 │   └── ts-config/              @sarko/ts-config
 ├── scripts/deploy.sh
-├── .github/workflows/          ci.yml, deploy.yml
+├── .github/workflows/          ci-cd.yml
 ├── Dockerfile                  3 stage: contracts → builder → runtime
 ├── compose.yaml
 ├── eslint.config.mjs
@@ -162,15 +162,26 @@ User `default` **wajib** ditulis — `redis://:PASS@...` gagal di `redis-cli`.
 | `compose.yaml` | service `api`, port 4000, network shared_db |
 | `scripts/deploy.sh` | deploy idempotent 6 langkah |
 | `packages/contracts/` | `@sarko/contracts` — schema + enum bersama |
-| `.github/workflows/ci.yml` | lint, typecheck, test, build, docker |
-| `.github/workflows/deploy.yml` | Tailscale + rsync + deploy + verifikasi |
+| `.github/workflows/ci-cd.yml` | satu workflow CI/CD: job `verify` → `docker` → `deploy` |
 | `.github/DEPLOY-SETUP.md` | panduan secrets CI/CD |
 
 ## CI/CD
 
-Push ke `main` → `ci.yml` jalan (lint, typecheck, 166 test, build, docker
-build) → kalau sukses, `deploy.yml` jalan (join tailnet, rsync, deploy,
-verifikasi health publik).
+Hanya ada SATU file workflow: `.github/workflows/ci-cd.yml` (name: `CI/CD`).
+
+| Kejadian | `verify` + `docker` | `deploy` |
+|---|---|---|
+| PR dibuka/diupdate ke `main` | jalan | **skip** (tidak ada secrets di PR) |
+| Push ke branch fitur | tidak trigger | tidak trigger |
+| **Merge ke `main`** | jalan | **jalan otomatis** kalau verify+docker hijau |
+| `workflow_dispatch` manual | jalan | jalan |
+
+Alur kontributor: buat branch baru → push → buka PR ke `main` → CI
+memvalidasi → merge → CI/CD jalan penuh dan deploy otomatis ke VPS.
+
+Gerbang deploy ada dua lapis: `needs: [verify, docker]` (tidak jalan kalau CI
+merah) dan `if:` yang mensyaratkan `push` ke `refs/heads/main` atau dispatch
+manual. Jadi PR tidak pernah bisa men-deploy.
 
 Butuh 5 secrets di repo: `TS_OAUTH_CLIENT_ID`, `TS_OAUTH_SECRET`,
 `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`. Detail di `.github/DEPLOY-SETUP.md`.

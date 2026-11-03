@@ -91,7 +91,7 @@ IP publik VPS: 103.147.32.118 (tidak menerima SSH)
 ```
 
 Runner GitHub tidak berada di tailnet, jadi harus join dulu. Karena itu
-`deploy.yml` memakai `tailscale/github-action`.
+job `deploy` di `ci-cd.yml` memakai `tailscale/github-action`.
 
 ### Membuat OAuth client Tailscale
 
@@ -141,7 +141,7 @@ Bisa juga manual: **Actions → CI → Run workflow**.
 Deploy berjalan otomatis setelah CI sukses di `main`
 (trigger `workflow_run`). Atau manual: **Actions → Deploy → Run workflow**.
 
-Yang dilakukan `deploy.yml`:
+Yang dilakukan job `deploy` di `ci-cd.yml`:
 
 1. checkout kode
 2. cek 5 secrets terisi (gagal cepat dengan pesan jelas kalau kosong)
@@ -166,7 +166,7 @@ Yang dilakukan `deploy.yml`:
 | `tailscale: ping VPS_HOST failed` | ACL belum izinkan `tag:ci` | perbaiki ACL policy |
 | `Permission denied (publickey)` | `VPS_SSH_KEY` salah/terpotong | tempel ulang isi file penuh |
 | `rsync: command not found` | rsync tidak ada di VPS | `sudo apt install -y rsync` (sudah terpasang 3.2.7) |
-| Deploy jalan tapi kode tidak berubah | rsync terblokir / path salah | cek `APP_DIR` di `deploy.yml` = `/srv/apps/sarko-api` |
+| Deploy jalan tapi kode tidak berubah | rsync terblokir / path salah | cek `APP_DIR` di `ci-cd.yml` = `/srv/apps/sarko-api` |
 | Health check gagal | container tidak naik | `docker logs --tail 100 sarko-api` di VPS |
 
 ## Setelah semua jalan
