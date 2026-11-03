@@ -15,7 +15,7 @@ import { Public } from '../../shared/decorators/public.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/validation/zod-validation.pipe';
 import { RolesGuard } from './roles.guard';
-import { IdentityService } from './identity.service';
+import { IdentityService, type OutletSummary } from './identity.service';
 
 const pinLoginSchema = pinSchema.extend({ user_id: z.string().uuid().optional() });
 const refreshSchema = z.object({ refresh_token: z.string().min(1) });
@@ -92,5 +92,14 @@ export class IdentityController {
   @ApiOperation({ summary: 'Daftar device (opsional filter outlet)' })
   async listDevices(@CurrentUser('outletIds') outletIds: string[]): Promise<Device[]> {
     return this.identity.listDevices(outletIds[0]);
+  }
+
+  @ApiBearerAuth()
+  @Get('outlets')
+  @ApiOperation({ summary: 'Daftar outlet yang boleh diakses user yang login' })
+  async listOutlets(
+    @CurrentUser('outletIds') outletIds: string[],
+  ): Promise<OutletSummary[]> {
+    return this.identity.listOutlets(outletIds);
   }
 }

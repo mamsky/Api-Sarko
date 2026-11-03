@@ -30,6 +30,12 @@ export type AuthenticatedUser = {
   outletIds: string[];
 };
 
+export type OutletSummary = {
+  id: string;
+  name: string;
+  code: string;
+};
+
 /**
  * Autentikasi & manajemen device (PRD FR-AUTH, FR-ID).
  *
@@ -175,6 +181,18 @@ export class IdentityService {
   async listDevices(outletId?: string): Promise<Device[]> {
     const rows = await this.repository.listDevices(outletId);
     return rows.map(toDeviceContract);
+  }
+
+  /**
+   * Outlet yang boleh dilihat user ini. Dipakai admin untuk mengisi pemilih
+   * outlet — tanpa endpoint ini frontend tidak punya sumber nama outlet sama
+   * sekali, karena `SessionUser.outlet_ids` hanya berisi UUID.
+   */
+  async listOutlets(outletIds: string[]): Promise<OutletSummary[]> {
+    const rows = await this.repository.listOutletsByIds(outletIds);
+    return rows
+      .map((row) => ({ id: row.id, name: row.name, code: row.code }))
+      .sort((left, right) => left.name.localeCompare(right.name));
   }
 
   async refresh(refreshToken: string): Promise<LoginResponse> {

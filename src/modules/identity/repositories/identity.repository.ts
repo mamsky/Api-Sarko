@@ -1,10 +1,11 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { and, desc, eq, isNull, lt, or } from 'drizzle-orm';
+import { and, desc, eq, inArray, isNull, lt, or } from 'drizzle-orm';
 
 import { DRIZZLE, type Database } from '../../../database/drizzle.service';
 import { hashOpaqueToken } from '../../../shared/crypto/token-hash';
 import {
   device,
+  outlet,
   pinAttempt,
   refreshToken,
   role,
@@ -15,6 +16,7 @@ import {
 export type UserRow = typeof user.$inferSelect;
 export type DeviceRow = typeof device.$inferSelect;
 export type RefreshTokenRow = typeof refreshToken.$inferSelect;
+export type OutletRow = typeof outlet.$inferSelect;
 
 export type PinTarget = {
   id: string;
@@ -122,6 +124,11 @@ export class IdentityRepository {
 
   async listRoles(): Promise<(typeof role.$inferSelect)[]> {
     return this.db.select().from(role);
+  }
+
+  async listOutletsByIds(outletIds: string[]): Promise<OutletRow[]> {
+    if (outletIds.length === 0) return [];
+    return this.db.select().from(outlet).where(inArray(outlet.id, outletIds));
   }
 
   async insertRefreshToken(values: typeof refreshToken.$inferInsert): Promise<void> {
