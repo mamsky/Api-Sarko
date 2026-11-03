@@ -1,0 +1,39 @@
+# ── Dependencies ─────────────────────────────────────────────
+node_modules/
+.pnpm-store/
+
+# ── Build output ─────────────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+.nest/
+
+# ── Cache ────────────────────────────────────────────────────
+.turbo/
+.eslintcache
+
+# ── Environment & secrets ────────────────────────────────────
+# Jangan pernah commit kredensial. Contoh template tetap dilacak.
+.env
+.env.*
+!.env.example
+
+# ── Logs ─────────────────────────────────────────────────────
+*.log
+logs/
+npm-debug.log*
+pnpm-debug.log*
+
+# ── Test & coverage ──────────────────────────────────────────
+coverage/
+.nyc_output/
+
+# ── Editor ───────────────────────────────────────────────────
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.swp
+
+# ── OS ───────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

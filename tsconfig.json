@@ -1,0 +1,14 @@
+{
+  "extends": "@sarko/ts-config/node.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "./dist",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["node", "jest"]
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
