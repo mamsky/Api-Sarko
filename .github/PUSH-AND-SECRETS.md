@@ -139,7 +139,7 @@ Bisa juga manual: **Actions → CI → Run workflow**.
 ### Deploy
 
 Deploy berjalan otomatis setelah CI sukses di `main`
-(trigger `workflow_run`). Atau manual: **Actions → Deploy → Run workflow**.
+(trigger `push` ke `main`). Atau manual: **Actions → CI/CD → Run workflow**.
 
 Yang dilakukan job `deploy` di `ci-cd.yml`:
 

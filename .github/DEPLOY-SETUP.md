@@ -54,7 +54,7 @@ push ke main
        -> verifikasi https://sarko-api.pasteprosmana.my.id/v1/health
 ```
 
-Deploy juga bisa dipicu manual: **Actions → Deploy → Run workflow**.
+Deploy juga bisa dipicu manual: **Actions → CI/CD → Run workflow**.
 
 ## 3. Yang TIDAK dikirim ke VPS
 
