@@ -24,6 +24,22 @@ async function bootstrap(): Promise<void> {
 
   app.useGlobalFilters(new ProblemDetailFilter(app.get(ClsService)));
 
+  // Alias `/api/v1/*` → `/v1/*`. Prefix `v1` ditulis di masing-masing
+  // controller, jadi menambah global prefix akan memutus semua route yang
+  // sudah dipakai POS, KDS, dan admin. Rewrite di lapisan HTTP membuat kedua
+  // bentuk URL hidup berdampingan tanpa menyentuh satu controller pun.
+  const expressApp = app.getHttpAdapter().getInstance() as {
+    use: (handler: (req: { url: string }, res: unknown, next: () => void) => void) => void;
+  };
+  expressApp.use((req, res, next) => {
+    if (req.url === '/api/v1' || req.url.startsWith('/api/v1/')) {
+      req.url = req.url.slice('/api'.length);
+    } else if (req.url === '/api/docs' || req.url.startsWith('/api/docs/')) {
+      req.url = req.url.slice('/api'.length);
+    }
+    next();
+  });
+
   const corsOrigins = (process.env.CORS_ORIGINS ?? 'http://localhost:5173,http://localhost:8081')
     .split(',')
     .map((origin) => origin.trim())
