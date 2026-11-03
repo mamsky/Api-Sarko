@@ -1,0 +1,38 @@
+name: sarko-api
+
+services:
+  api:
+    image: sarko-api:local
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: sarko-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "127.0.0.1:4000:3000"
+    networks:
+      - shared_db
+    mem_limit: 384m
+    memswap_limit: 512m
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "require('http').get({host:'127.0.0.1',port:process.env.PORT||3000,path:'/v1/health',timeout:4000},r=>process.exit(r.statusCode===200?0:1)).on('error',()=>process.exit(1))"
+      interval: 30s
+      timeout: 6s
+      retries: 3
+      start_period: 45s
+
+networks:
+  shared_db:
+    external: true
+    name: shared_db

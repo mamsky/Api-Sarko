@@ -1,4 +1,4 @@
-import { Controller, Get, Header, Query } from '@nestjs/common';
+import { Controller, Get, Header, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
 
@@ -6,7 +6,6 @@ import { CurrentUser } from '../../shared/decorators/current-user.decorator';
 import { Roles } from '../../shared/decorators/roles.decorator';
 import { ZodValidationPipe } from '../../shared/validation/zod-validation.pipe';
 import { RolesGuard } from '../identity/roles.guard';
-import { UseGuards } from '@nestjs/common';
 import { ReportingService } from './reporting.service';
 
 const reportQuerySchema = z.object({
