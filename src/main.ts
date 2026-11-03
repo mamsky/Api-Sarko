@@ -44,7 +44,17 @@ async function bootstrap(): Promise<void> {
     .split(',')
     .map((origin) => origin.trim())
     .filter((origin) => origin.length > 0);
-  app.enableCors({ origin: corsOrigins, credentials: true });
+
+  // `credentials: true` melarang `Access-Control-Allow-Origin: *` menurut spec,
+  // jadi wildcard TIDAK boleh diteruskan sebagai string/array "*": browser akan
+  // menolaknya dan header tidak terkirim sama sekali. Satu-satunya cara legal
+  // mengizinkan semua origin sambil tetap mengirim cookie/Authorization adalah
+  // memantulkan origin request lewat `origin: true`.
+  const allowAllOrigins = corsOrigins.includes('*');
+  app.enableCors({
+    origin: allowAllOrigins ? true : corsOrigins,
+    credentials: true,
+  });
 
   const swaggerConfig = new DocumentBuilder()
     .setTitle('SARKO API')
